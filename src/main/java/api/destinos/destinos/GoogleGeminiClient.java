@@ -41,7 +41,7 @@ public class GoogleGeminiClient {
         JSONObject generationConfig = new JSONObject();
         generationConfig.put("stopSequences", new JSONArray().put("Title"));
         generationConfig.put("temperature", 1.0);
-        generationConfig.put("maxOutputTokens", 200);
+        generationConfig.put("maxOutputTokens", 60);
         generationConfig.put("topP", 0.8);
         generationConfig.put("topK", 10);
         json.put("generationConfig", generationConfig);
@@ -52,14 +52,24 @@ public class GoogleGeminiClient {
         Request request = new Request.Builder().url(url).header("Content-Type", "application/json").post(body).build();
 
         try (Response response = this.client.newCall(request).execute()) {
-            if (!response.isSuccessful() || response.body() == null)
-                throw new IOException("Unexpected code " + response);
 
-            return extractTextFromResponse(response.body().string());
+//            if (!response.isSuccessful() || response.body() == null) {
+            if (response.body().contentLength() == 0) {
+                request = new Request.Builder().url(url).header("Content-Type", "application/json").post(body).build();
+                System.out.println("cair aqui");
+            }
+            //            throw new IOException("Unexpected code " + response);
+            String responseGemini = extractTextFromResponse(response.body().string());
+            System.out.println(responseGemini);
+            if (responseGemini.length() > 250) {
+                System.out.println("cair aqui");
+                responseGemini = responseGemini.substring(0, 250);
+            }
+            return responseGemini;
         }
     }
 
-    private String extractTextFromResponse(String responseBody) {
+    private String extractTextFromResponse(String responseBody) throws IOException {
         JSONObject responseJson = new JSONObject(responseBody);
         JSONArray candidates = responseJson.getJSONArray("candidates");
         JSONObject firstCandidate = candidates.getJSONObject(0);

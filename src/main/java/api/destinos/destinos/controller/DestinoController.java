@@ -32,6 +32,7 @@ public final class DestinoController {
                     .status(HttpStatus.CREATED)
                     .body(service.createDescriptionDestino(destino));
         } catch (Exception e) {
+            System.out.println("cair erro controller" + e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

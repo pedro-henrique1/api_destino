@@ -18,6 +18,7 @@ public class CriaDestinoComIA implements DestinoDescriptionService {
     @Autowired
     private GoogleGeminiClient geminiClient;
 
+    @Autowired
     public CriaDestinoComIA(DestinoRepository destinoRepository, GoogleGeminiClient geminiClient) {
         this.destinoRepository = destinoRepository;
         this.geminiClient = geminiClient;
@@ -26,9 +27,7 @@ public class CriaDestinoComIA implements DestinoDescriptionService {
     @Override
     public Destino createDescriptionDestino(Destino destino) {
         if (destino.getDescription().isEmpty()) {
-            String prompt = "Faça um resumo sobre " + destino.getName() + "enfatizando o porque este lugar é incrível." +
-                    " Utilize uma linguagem informal e até 100 caracteres no máximo em cada parágrafo. " +
-                    "Crie 1 parágrafos neste resumo";
+            String prompt = "Faça um resumo sobre " + destino.getName() + ", enfatizando o porque este lugar é incrível. Utilize uma linguagem informal e até 250 caracteres no máximo e sem emojis";
             destino.setDescription(cleanText(this.createDescriptionWithGoogleGemini(prompt)));
         }
         destinoRepository.save(destino);
@@ -37,9 +36,7 @@ public class CriaDestinoComIA implements DestinoDescriptionService {
     }
 
     private String cleanText(String text) {
-        return text.replaceAll("(\r\n|\n|\r){2,}", "\n\n")
-                .replaceAll(" +", " ")
-                .trim();
+        return text.replaceAll("(\r\n|\n|\r){2,}", "\n\n").replaceAll(" +", " ").trim();
     }
 
     private String createDescriptionWithGoogleGemini(String prompt) {
