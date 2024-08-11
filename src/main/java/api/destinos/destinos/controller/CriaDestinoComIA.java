@@ -2,6 +2,7 @@ package api.destinos.destinos.controller;
 
 
 import api.destinos.destinos.GoogleGeminiClient;
+import api.destinos.destinos.OpeniaClient;
 import api.destinos.destinos.model.Destino;
 import api.destinos.destinos.repository.DestinoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,21 @@ public class CriaDestinoComIA implements DestinoDescriptionService {
     private GoogleGeminiClient geminiClient;
 
     @Autowired
-    public CriaDestinoComIA(DestinoRepository destinoRepository, GoogleGeminiClient geminiClient) {
+    private OpeniaClient openiaClient;
+
+    @Autowired
+    public CriaDestinoComIA(DestinoRepository destinoRepository, GoogleGeminiClient geminiClient, OpeniaClient openiaClient) {
         this.destinoRepository = destinoRepository;
         this.geminiClient = geminiClient;
+        this.openiaClient = openiaClient;
     }
 
     @Override
     public Destino createDescriptionDestino(Destino destino) {
         if (destino.getDescription().isEmpty()) {
             String prompt = "Faça um resumo sobre " + destino.getName() + ", enfatizando o porque este lugar é incrível. Utilize uma linguagem informal e até 250 caracteres no máximo e sem emojis";
-            destino.setDescription(cleanText(this.createDescriptionWithGoogleGemini(prompt)));
+//            destino.setDescription(cleanText(this.createDescriptionWithGoogleGemini(prompt)));
+            destino.setDescription(this.createDescriptionWithOpenia(prompt));
         }
         destinoRepository.save(destino);
 
@@ -47,6 +53,10 @@ public class CriaDestinoComIA implements DestinoDescriptionService {
 
             return "";
         }
+    }
+
+    private String createDescriptionWithOpenia(String prompt) {
+        return openiaClient.generateDescription(prompt);
     }
 }
 
