@@ -10,14 +10,23 @@
 
 ## Instalação
 
-
 1. Clone do repositorio
 
 ```
 $ git clone https://github.com/pedro-henrique1/Destino-Viagem.git
 
 ```
-2. instalar dependências do spring boot e maven
+
+2. Copiar o arquivo de configuração
+
+```
+cd src/main/resources
+
+cp application-example.properties  application.properties
+
+```
+
+3. instalar dependências do spring boot e maven
 
 ## Usando
 
@@ -50,7 +59,6 @@ PUT /destino/{id} - Altera os dados do destino.
 DELETE /destino/delete/{id} - Delete o destino desejado.
 
 ```
-
 
 ## Banco de dados
 
